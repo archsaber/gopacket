@@ -779,19 +779,29 @@ type PacketSource struct {
 	// way packets should be decoded.
 	DecodeOptions
 	c chan Packet
+	// to stop packet reading and closing the channel
+	closeChan chan bool
 }
 
 // NewPacketSource creates a packet data source.
-func NewPacketSource(source PacketDataSource, decoder Decoder) *PacketSource {
+func NewPacketSource(source PacketDataSource, decoder Decoder, closeChan chan bool) *PacketSource {
 	return &PacketSource{
-		source:  source,
-		decoder: decoder,
+		source:    source,
+		decoder:   decoder,
+		closeChan: closeChan,
 	}
 }
 
 // NextPacket returns the next decoded packet from the PacketSource.  On error,
 // it returns a nil packet and a non-nil error.
 func (p *PacketSource) NextPacket() (Packet, error) {
+	select {
+	case msg := <-p.closeChan:
+		if msg {
+			return nil, errors.New("CLOSE")
+		}
+	default:
+	}
 	data, ci, err := p.source.ReadPacketData()
 	if err != nil {
 		return nil, err
@@ -810,7 +820,7 @@ func (p *PacketSource) packetsToChannel() {
 	defer close(p.c)
 	for {
 		packet, err := p.NextPacket()
-		if err == io.EOF {
+		if err == io.EOF || err.Error() == "CLOSE" {
 			return
 		} else if err == nil {
 			p.c <- packet
