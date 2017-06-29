@@ -13,7 +13,7 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/google/gopacket"
+	"github.com/archsaber/gopacket"
 )
 
 // TCP is the layer for TCP headers.

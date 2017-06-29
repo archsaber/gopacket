@@ -12,9 +12,9 @@ import (
 	"net"
 	"testing"
 
-	"github.com/google/gopacket"
-	"github.com/google/gopacket/bytediff"
-	"github.com/google/gopacket/layers"
+	"github.com/archsaber/gopacket"
+	"github.com/archsaber/gopacket/bytediff"
+	"github.com/archsaber/gopacket/layers"
 )
 
 func TestNotFrag(t *testing.T) {
