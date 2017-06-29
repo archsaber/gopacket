@@ -820,10 +820,12 @@ func (p *PacketSource) packetsToChannel() {
 	defer close(p.c)
 	for {
 		packet, err := p.NextPacket()
-		if err == io.EOF || err.Error() == "CLOSE" {
+		if err == io.EOF {
 			return
 		} else if err == nil {
 			p.c <- packet
+		} else if err.Error() == "CLOSE" {
+			return
 		}
 	}
 }
