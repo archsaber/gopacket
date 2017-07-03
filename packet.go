@@ -825,6 +825,7 @@ func (p *PacketSource) packetsToChannel() {
 		} else if err == nil {
 			p.c <- packet
 		} else if err.Error() == "CLOSE" {
+			fmt.Println("packetsToChannel close()")
 			return
 		}
 	}
