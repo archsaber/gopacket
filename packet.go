@@ -797,6 +797,7 @@ func NewPacketSource(source PacketDataSource, decoder Decoder, closeChan chan bo
 func (p *PacketSource) NextPacket() (Packet, error) {
 	select {
 	case msg := <-p.closeChan:
+		fmt.Println("read from closeChan: ", msg)
 		if msg {
 			return nil, errors.New("CLOSE")
 		}
