@@ -397,6 +397,7 @@ func (p *Handle) Close() {
 	}
 	C.pcap_close(p.cptr)
 	p.cptr = nil
+	fmt.Println("pcap_close()")
 }
 
 // Error returns the current error associated with a pcap handle (pcap_geterr).
