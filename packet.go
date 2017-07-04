@@ -822,7 +822,7 @@ func (p *PacketSource) packetsToChannel(duration int) {
 	tick := time.NewTicker(time.Millisecond * time.Duration(duration))
 	for {
 		select {
-		case msg := <-tick.C:
+		case _ = <-tick.C:
 			fmt.Println("100ms tick")
 			return
 		default:
