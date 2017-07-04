@@ -817,9 +817,16 @@ func (p *PacketSource) NextPacket() (Packet, error) {
 // packetsToChannel reads in all packets from the packet source and sends them
 // to the given channel.  When it receives an error, it ignores it.  When it
 // receives an io.EOF, it closes the channel.
-func (p *PacketSource) packetsToChannel() {
+func (p *PacketSource) packetsToChannel(duration int) {
 	defer close(p.c)
+	tick := time.NewTicker(time.Millisecond * time.Duration(duration))
 	for {
+		select {
+		case msg := <-tick.C:
+			fmt.Println("100ms tick")
+			return
+		default:
+		}
 		packet, err := p.NextPacket()
 		if err == io.EOF {
 			return
@@ -843,10 +850,10 @@ func (p *PacketSource) packetsToChannel() {
 //  }
 //
 // If called more than once, returns the same channel.
-func (p *PacketSource) Packets() chan Packet {
+func (p *PacketSource) Packets(duration int) chan Packet {
 	if p.c == nil {
 		p.c = make(chan Packet, 1000)
-		go p.packetsToChannel()
+		go p.packetsToChannel(duration)
 	}
 	return p.c
 }
